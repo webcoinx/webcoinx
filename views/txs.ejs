@@ -1,0 +1,48 @@
+<table cellpadding="0" cellspacing="0" width="100%" class="sortable txlist">
+  <thead>
+	<tr>
+	  <th>Status</th>
+	  <th>Date</th>
+	  <% if (wallet) { %>
+	  <th>Description</th>
+		  <th>Debit</th>
+		  <th>Credit</th>
+	  <% } else { %>
+		  <th>Value</th>
+	  <% } %>
+          <th>Fees</th>
+	  <th></th>
+	</tr>
+  </thead>
+  <tbody>
+  <% for (var i = 0; i < txs.length; i++) { %>
+		<% tx = txs[i]; %>
+		<tr data-index="<%=i%>">
+		<% if (tx.block) {
+		  var confirmations = blockHeight - tx.block.height + 1;
+        %>
+			  <td><%=confirmations == 1 ? "1 confirmation" : "" + confirmations + " confirmations"%></td>
+		  <% } else { %>
+			  <td>New</td>
+		  <% } %>
+		  <td><%=new Date(tx.timestamp*1000).toUTCString()%></td>
+	  <% if (wallet) { %>
+		  <td><%=tx.getDescription(wallet,cm)%></td>
+		  <% var impact = tx.calcImpact(wallet,cm); %>
+		  <td><%=(impact.sign == -1) ? Bitcoin.Util.formatValue(cm.s2c(tx.color.colorid, impact.value), tx.color.name) : ""%></td>
+		  <td><%=(impact.sign == 1) ? Bitcoin.Util.formatValue(cm.s2c(tx.color.colorid, impact.value), tx.color.name) : ""%></td>
+	  <% } else { %>
+		  <td><%=Bitcoin.Util.formatValue(tx.getTotalValue(), tx.color)%></td>
+	  <% } %>
+                  <td>
+<%=Bitcoin.Util.formatValue(impact.fees)%>
+		  <td class="detail"><img src="images/detail.png" alt=""></td>
+		</tr>
+	<% } %>
+	<% if (!txs.length) { %>
+		<tr>
+		  <td colspan="<%=wallet ? "8" : "7"%>">No transactions</td>
+		</tr>
+	<% } %>
+  </tbody>
+</table>

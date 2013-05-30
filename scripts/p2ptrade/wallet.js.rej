@@ -1,0 +1,22 @@
+--- wallet.js
++++ wallet.js
+@@ -84,15 +98,15 @@
+          this.id = make_random_id();
+      }
+      MockWallet.prototype.getAddress = function (colorid, is_change) {
+-                        return 'a_' + this.wallet.getCurAddress().toString();
++                        return this.wallet.getCurAddress().toString();
+      };
+      MockWallet.prototype.createPayment = function (color, amount, to_address) {
+-         var outpoint= "o_" + this.id + "_" + make_random_id();
++         var outpoints = this.collectMyOutpoints(color);
+          return new MockExchangeTransaction(this, 
+                                             {
+-                                                tx: {inp: [{outpoint: outpoint, signed: false}],
++                                                tx: {inp: [outpoints],
+                                                      out: [{to: to_address, value: amount, color: color}]},
+-                                                my: [outpoint]
++                                                my: outpoints
+                                             });
+      };
+      MockWallet.prototype.importTx = function (tx_data) {
